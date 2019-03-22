@@ -6,10 +6,10 @@ import Root from './components/root';
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('root');
   let preloadedState = undefined;
-  if (window.currentUser) {
+  if (window.current_user) {
     preloadedState = {
       session: {
-        currentUser: window.currentUser
+        currentUser: window.current_user
       }
     };
   }

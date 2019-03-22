@@ -238,10 +238,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   var root = document.getElementById('root');
   var preloadedState = undefined;
-  if (window.currentUser) {
+  if (window.current_user) {
     preloadedState = {
       session: {
-        currentUser: window.currentUser
+        currentUser: window.current_user
       }
     };
   }
@@ -293,6 +293,8 @@ var _signup_container = __webpack_require__(/*! ./session/signup_container */ ".
 
 var _signup_container2 = _interopRequireDefault(_signup_container);
 
+var _route_utils = __webpack_require__(/*! ../utils/route_utils */ "./frontend/utils/route_utils.jsx");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = function () {
@@ -301,8 +303,8 @@ exports.default = function () {
     null,
     _react2.default.createElement(_reactRouterDom.Route, { path: '/', component: _nav_bar_container2.default }),
     _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _home2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/chirps', component: _chirp_index_container2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/signup', component: _signup_container2.default })
+    _react2.default.createElement(_route_utils.ProtectedRoute, { path: '/chirps', component: _chirp_index_container2.default }),
+    _react2.default.createElement(_route_utils.AuthRoute, { path: '/signup', component: _signup_container2.default })
   );
 };
 
@@ -568,7 +570,22 @@ exports.default = function (_ref) {
   var currentUser = _ref.currentUser,
       logout = _ref.logout;
 
-  var display = _react2.default.createElement(
+  //debugger //currentUser is null even though window.current_user is current_user obj
+  var display = currentUser ? _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(
+      'p',
+      null,
+      'Hello, ',
+      currentUser.username
+    ),
+    _react2.default.createElement(
+      'button',
+      { onClick: logout },
+      'Log Out'
+    )
+  ) : _react2.default.createElement(
     'div',
     null,
     _react2.default.createElement(
@@ -630,6 +647,7 @@ var _session = __webpack_require__(/*! ../../actions/session */ "./frontend/acti
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var mapStateToProps = function mapStateToProps(state) {
+  //debugger // state's currUser is null 
   return {
     currentUser: state.session.currentUser
   };
@@ -1017,7 +1035,7 @@ exports.default = (0, _redux.combineReducers)({
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
@@ -1033,8 +1051,8 @@ var _session2 = _interopRequireDefault(_session);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = (0, _redux.combineReducers)({
-  entities: _entities2.default,
-  session: _session2.default
+    entities: _entities2.default,
+    session: _session2.default
 });
 
 /***/ }),
@@ -1179,6 +1197,66 @@ var deleteLikeFromChirp = exports.deleteLikeFromChirp = function deleteLikeFromC
     data: { id: id }
   });
 };
+
+/***/ }),
+
+/***/ "./frontend/utils/route_utils.jsx":
+/*!****************************************!*\
+  !*** ./frontend/utils/route_utils.jsx ***!
+  \****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ProtectedRoute = exports.AuthRoute = undefined;
+
+var _react = __webpack_require__(/*! react */ "./node_modules/react/react.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
+
+var _reactRouterDom = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/es/index.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var msp = function msp(state) {
+    return {
+        loggedIn: Boolean(state.session.currentUser)
+    };
+};
+
+var Auth = function Auth(_ref) {
+    var loggedIn = _ref.loggedIn,
+        path = _ref.path,
+        Component = _ref.component;
+    return _react2.default.createElement(_reactRouterDom.Route, {
+        path: path,
+        render: function render(props) {
+            return loggedIn ? _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' }) : _react2.default.createElement(Component, props);
+        }
+    });
+};
+
+var Protected = function Protected(_ref2) {
+    var loggedIn = _ref2.loggedIn,
+        path = _ref2.path,
+        Component = _ref2.component;
+    return _react2.default.createElement(_reactRouterDom.Route, {
+        path: path,
+        render: function render(props) {
+            return loggedIn ? _react2.default.createElement(Component, props) : _react2.default.createElement(_reactRouterDom.Redirect, { to: '/signup' });
+        }
+    });
+};
+
+var AuthRoute = exports.AuthRoute = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(msp)(Auth));
+var ProtectedRoute = exports.ProtectedRoute = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(msp)(Protected));
 
 /***/ }),
 
