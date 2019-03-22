@@ -25,5 +25,7 @@ const Protected = ({ loggedIn, path, component: Component }) => (
     />
 );
 
+//const Bool = ({ loggedIn, path, component: Component }) => 
+
 export const AuthRoute = withRouter(connect(msp)(Auth));
 export const ProtectedRoute = withRouter(connect(msp)(Protected));

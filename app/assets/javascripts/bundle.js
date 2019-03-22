@@ -1255,6 +1255,8 @@ var Protected = function Protected(_ref2) {
     });
 };
 
+//const Bool = ({ loggedIn, path, component: Component }) => 
+
 var AuthRoute = exports.AuthRoute = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(msp)(Auth));
 var ProtectedRoute = exports.ProtectedRoute = (0, _reactRouterDom.withRouter)((0, _reactRedux.connect)(msp)(Protected));
 
